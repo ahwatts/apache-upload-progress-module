@@ -2,10 +2,14 @@
 #include <ap_config.h>
 #include <http_core.h>
 #include <http_log.h>
+#include <http_protocol.h>
+#include <http_request.h>
 #include <apr_version.h>
 #include <apr_pools.h>
 #include <apr_strings.h>
-#include "unixd.h"
+#include <time.h>
+#include <ctype.h>
+#include <unixd.h>
 
 #if APR_HAS_SHARED_MEMORY
 #include "apr_rmm.h"
@@ -613,7 +617,7 @@ static int upload_progress_init(apr_pool_t *p, apr_pool_t *plog,
         }
 
 #ifdef AP_NEED_SET_MUTEX_PERMS
-        result = unixd_set_global_mutex_perms(config->cache_lock);
+        result = ap_unixd_set_global_mutex_perms(config->cache_lock);
         if (result != APR_SUCCESS) {
             ap_log_error(APLOG_MARK, APLOG_CRIT, result, s,
                          "Upload progress cache: failed to set mutex permissions");
