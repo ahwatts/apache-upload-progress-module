@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <ap_config.h>
+#include <ap_release.h>
 #include <http_core.h>
 #include <http_log.h>
 #include <http_protocol.h>
@@ -617,7 +618,11 @@ static int upload_progress_init(apr_pool_t *p, apr_pool_t *plog,
         }
 
 #ifdef AP_NEED_SET_MUTEX_PERMS
+#  if AP_SERVER_MAJORVERSION_NUMBER == 2 && AP_SERVER_MINORVERSION_NUMBER >= 4
         result = ap_unixd_set_global_mutex_perms(config->cache_lock);
+#  else
+	result = unixd_set_global_mutex_perms(config->cache_lock);
+#  endif
         if (result != APR_SUCCESS) {
             ap_log_error(APLOG_MARK, APLOG_CRIT, result, s,
                          "Upload progress cache: failed to set mutex permissions");
